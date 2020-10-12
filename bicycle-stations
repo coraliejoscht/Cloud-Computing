@@ -1,0 +1,45 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Oct 12 09:00:16 2020
+
+@author: Solene Corre, Coralie Joscht
+
+"""
+
+from pymongo import MongoClient
+import pprint 
+import request
+import json
+
+client = MongoClient("mongodb+srv://solenecorre:<password>@cluster0.gvjww.mongodb.net/<dbname>?retryWrites=true&w=majority")
+db = client['bicycle-stations']
+collection = db[VilleLille]
+
+
+def getVilleLille():
+url = "https://opendata.lillemetropole.fr/api/records/1.0/search/?dataset=vlille-realtime&q=&rows=3000&facet=libelle&facet=nom&facet=commune&facet=etat&facet=type&facet=etatconnexion"
+response = requests.request("GET",url)
+response_json = json.loads(response.text.encode("utf8"))
+return response_json.get("records",[])
+
+def getVilleLyon():
+url = "https://download.data.grandlyon.com/wfs/grandlyon?SERVICE=WFS&VERSION=1.1.0&request=GetFeature&outputFormat=geojson&typename=pvo_patrimoine_voirie.pvostationvelov"
+response = requests.request("GET",url)
+response_json = json.loads(response.text.encode("utf8"))
+return response_json.get("records",[])
+
+def getVilleParis():
+url = "https://velib-metropole-opendata.smoove.pro/opendata/Velib_Metropole/station_information.json"
+response = requests.request("GET",url)
+response_json = json.loads(response.text.encode("utf8"))
+return response_json.get("records",[])
+
+def getVilleRennes():
+url = ""
+response = requests.request("GET",url)
+response_json = json.loads(response.text.encode("utf8"))
+return response_json.get("records",[])
+
+result1 = collection.find({'records.fields.commune': {'$eq': 'VilleLille'}})
+
+pprint.pprint(list(result1))
